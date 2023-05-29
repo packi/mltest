@@ -1,0 +1,4 @@
+psycopg2-binary
+docutils
+sentence-transformers
+click
