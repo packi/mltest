@@ -21,15 +21,19 @@ def cli():
 
 
 @cli.command()
-@click.argument('path', type=click.Path(exists=True))
+@click.argument("path", type=click.Path(exists=True))
 def extract_blocks(path):
     GLOB = "*.rst"
     path_and_blocks = {}
 
     def extract_text_nodes(node):
         try:
-            return (node.parent.tagname in ("section", "document") and node.tagname == "title") or \
-                (node.parent.tagname != "system_message" and node.tagname == "paragraph")
+            return (
+                node.parent.tagname in ("section", "document")
+                and node.tagname == "title"
+            ) or (
+                node.parent.tagname != "system_message" and node.tagname == "paragraph"
+            )
         except AttributeError:
             return None  # not a usable text node
 
@@ -51,7 +55,7 @@ def extract_blocks(path):
 def usable_blocks(blocks: Sequence[str]) -> Iterator[str]:
     MODEL_MAX_INPUT_LENGH = 100
     for block in blocks:
-        if len(block.split(' ')) < MODEL_MAX_INPUT_LENGH:
+        if len(block.split(" ")) < MODEL_MAX_INPUT_LENGH:
             yield block
         else:
             for sentence in block.split(". "):
@@ -81,12 +85,16 @@ def create_embeddings():
 
             embeddings = model.encode(blocks_to_calculate)
             article_id = str(uuid.uuid4())
-            out_sql.write(f"INSERT INTO articles(article_id, link) VALUES ('{article_id}', '{path_str}');\n")
+            out_sql.write(
+                f"INSERT INTO articles(article_id, link) VALUES ('{article_id}', '{path_str}');\n"
+            )
             out_sql.write("INSERT INTO blocks(article_id, block, embedding) VALUES\n")
             values = []
             for block, embedding in zip(blocks_to_calculate, embeddings):
                 block_clean = block.replace("'", "''")
-                values.append(f"('{article_id}', '{block_clean}', '{embedding.tolist()}')")
+                values.append(
+                    f"('{article_id}', '{block_clean}', '{embedding.tolist()}')"
+                )
             out_sql.write(f"{','.join(values)};\n")
 
 
