@@ -25,7 +25,7 @@ Running
 -------
 ```bash
 psql $DB_URL -f schema.sql
-mltest extract-titles
+mltest extract-blocks
 mltest create-embeddings
 psql $DB_URL -f out/embeddings.sql
 mltest prompt
